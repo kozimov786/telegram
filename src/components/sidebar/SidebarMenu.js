@@ -4,7 +4,7 @@ import React from 'react';
 const SidebarMenu = () => {
   return (
     <div className='menu'>
-      <button className='menu__btn'>
+      <button className='menu__btn menu__btn-active'>
         <span className='menu__btn-inner'>All <span className='badge'>12</span> </span>
       </button>
       <button className='menu__btn'>

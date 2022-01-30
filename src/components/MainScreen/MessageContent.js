@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useContext, useEffect } from 'react';
 import { Context } from '../..';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, Timestamp, orderBy } from "firebase/firestore";
 import styled from 'styled-components';
 
 import UserImg from '../../images/user.jpeg'
@@ -22,25 +22,29 @@ const MessageContent = () => {
 
 
   const getCol = collection(db, 'user')
+  const q = query(getCol, orderBy("createdAt", "asc"));
+
   const sendMessage = async () => {
-    try {
-      const docRef = await addDoc(getCol, {
-        displayName: user.displayName,
-        uid: user.uid,
-        text: value,
-        photoURL: user.photoURL,
-        createdAt: Timestamp.fromDate(new Date("December 17, 2021")),
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
+    if (value !== '') {
+      try {
+        const docRef = await addDoc(getCol, {
+          displayName: user.displayName,
+          uid: user.uid,
+          text: value,
+          photoURL: user.photoURL,
+          createdAt: Timestamp.fromDate(new Date()),
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
     setValue('')
   }
 
   useEffect(() => {
     const getData = async () => {
-      const data = await getDocs(getCol)
+      const data = await getDocs(q)
       const dataList = data.docs.map((doc) => {
         let data = doc.data()
         return data
@@ -49,11 +53,15 @@ const MessageContent = () => {
       return dataList
     }
     getData()
-  }, [getCol])
+  }, [q])
 
   const stickerHandler = (e) => {
     const stik = e.target;
     setValue((prev) => prev + stik.textContent)
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
   }
 
   return (
@@ -69,8 +77,7 @@ const MessageContent = () => {
 
             <Box style={user.uid === message.uid ? { backgroundColor: '#8774e1' } : { backgroundColor: '#2b2b2b' }}>
               <div>
-                <h2 className='box__title'
-                  style={user.uid === message.uid ? { color: "#27c095" } : { color: '#8774e1' }}>{message.displayName}
+                <h2 className='box__title'>{message.displayName ? message.displayName : ''}
                 </h2>
                 <p className='box__text'>{message.text}</p>
               </div>
@@ -79,109 +86,119 @@ const MessageContent = () => {
             </Box>
           </Wrapper>
         ))}
-      </div>
-      <div className='sending'>
-        <div className="sending__wrapper">
-          <div className="sending__container">
-            <div className="sending__stickers">
-              <div className="sticker"
-                onClick={() => {
-                  setActive(prev => !prev)
-                }}
-              >
-                <FontAwesomeIcon icon={faSmile} color='white' size='lg' />
+        <div className='sending'>
+          <div className="sending__wrapper">
+            <form className='sending__form'
+              onSubmit={onSubmit}>
+              <div className="sending__container">
+                <div className="sending__stickers">
+                  <div className="sticker"
+                    onClick={() => {
+                      setActive(prev => !prev)
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faSmile} color='white' size='lg' />
+                  </div>
+                  <Stickers active={active} onClick={stickerHandler}>
+                    <span>😀</span>
+                    <span>😃</span>
+                    <span>😄</span>
+                    <span>😁</span>
+                    <span>😆</span>
+                    <span>😅</span>
+                    <span>😂</span>
+                    <span>🤣</span>
+                    <span>🥲</span>
+                    <span>😊</span>
+                    <span>😇</span>
+                    <span>🙃</span>
+                    <span>😍</span>
+                    <span>🥰</span>
+                    <span>😘</span>
+                    <span>😗</span>
+                    <span>😋</span>
+                    <span>🤨</span>
+                    <span>🧐</span>
+                    <span>🤓</span>
+                    <span>😎</span>
+                    <span>🥸</span>
+                    <span>🤩</span>
+                    <span>🥳</span>
+                    <span>😏</span>
+                    <span>😒</span>
+                    <span>😞</span>
+                    <span>😔</span>
+                    <span>😟</span>
+                    <span>😕</span>
+                    <span>😫</span>
+                    <span>🥺</span>
+                    <span>😢</span>
+                    <span>😭</span>
+                    <span>😤</span>
+                    <span>😠</span>
+                    <span>😡</span>
+                    <span>🤬</span>
+                    <span>🤯</span>
+                    <span>😳</span>
+                    <span>🥵</span>
+                    <span>🥶</span>
+                    <span>😶‍🌫️</span>
+                    <span>😱</span>
+                    <span>😨</span>
+                    <span>😰</span>
+                    <span>😥</span>
+                    <span>😓</span>
+                    <span>🤗</span>
+                    <span>🤔</span>
+                    <span>🤭</span>
+                    <span>🤫</span>
+                    <span>🤥</span>
+                    <span>😶</span>
+                    <span>😐</span>
+                    <span>😑</span>
+                  </Stickers>
+                </div>
+
+
+                <input type="text"
+                  placeholder='Message'
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.keyCode === 13) {
+                      sendMessage()
+                    }
+                  }}
+                />
+
+                <div className="sending__media">
+                  <FontAwesomeIcon className='paperclip' icon={faPaperclip} color='white' size='lg' onClick={() => {
+                    setFile(prev => !prev)
+                  }} />
+                  <MediaWrapper file={file}>
+                    <label htmlFor="photo-label"><FontAwesomeIcon className='media-icons' icon={faImage} size='lg' />  Photo or Video
+                      <input type="file" id='photo-label' />
+                    </label>
+                    <label htmlFor="file-label"><FontAwesomeIcon className='media-icons' icon={faFile} size='lg' />  File
+                      <input type="file" id='file-label' />
+                    </label>
+                    <button className='poll-btn'> <FontAwesomeIcon className='media-icons' icon={faPoll} size='lg' />  Poll</button>
+                  </MediaWrapper>
+                </div>
               </div>
-              <Stickers active={active} onClick={stickerHandler}>
-                <span>😀</span>
-                <span>😃</span>
-                <span>😄</span>
-                <span>😁</span>
-                <span>😆</span>
-                <span>😅</span>
-                <span>😂</span>
-                <span>🤣</span>
-                <span>🥲</span>
-                <span>😊</span>
-                <span>😇</span>
-                <span>🙃</span>
-                <span>😍</span>
-                <span>🥰</span>
-                <span>😘</span>
-                <span>😗</span>
-                <span>😋</span>
-                <span>🤨</span>
-                <span>🧐</span>
-                <span>🤓</span>
-                <span>😎</span>
-                <span>🥸</span>
-                <span>🤩</span>
-                <span>🥳</span>
-                <span>😏</span>
-                <span>😒</span>
-                <span>😞</span>
-                <span>😔</span>
-                <span>😟</span>
-                <span>😕</span>
-                <span>😫</span>
-                <span>🥺</span>
-                <span>😢</span>
-                <span>😭</span>
-                <span>😤</span>
-                <span>😠</span>
-                <span>😡</span>
-                <span>🤬</span>
-                <span>🤯</span>
-                <span>😳</span>
-                <span>🥵</span>
-                <span>🥶</span>
-                <span>😶‍🌫️</span>
-                <span>😱</span>
-                <span>😨</span>
-                <span>😰</span>
-                <span>😥</span>
-                <span>😓</span>
-                <span>🤗</span>
-                <span>🤔</span>
-                <span>🤭</span>
-                <span>🤫</span>
-                <span>🤥</span>
-                <span>😶</span>
-                <span>😐</span>
-                <span>😑</span>
-              </Stickers>
-            </div>
-            <form className='sending__form' action="" onSubmit={(e) => { e.preventDefault() }}>
-              <input type="text"
-                placeholder='Message'
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
+              <div className="sending_btn">
+                {value
+                  ?
+                  <button className='sending__button' onClick={sendMessage}>
+                    <FontAwesomeIcon icon={faPaperPlane} size='lg' color='white' />
+                  </button>
+                  :
+                  <FontAwesomeIcon icon={faMicrophone} color='white' size='lg' />}
+              </div>
             </form>
-            <div className="sending__media">
-              <FontAwesomeIcon className='paperclip' icon={faPaperclip} color='white' size='lg' onClick={() => {
-                setFile(prev => !prev)
-              }} />
-              <MediaWrapper file={file}>
-                <label htmlFor="photo-label"><FontAwesomeIcon className='media-icons' icon={faImage} size='lg' />  Photo or Video
-                  <input type="file" id='photo-label' />
-                </label>
-                <label htmlFor="file-label"><FontAwesomeIcon className='media-icons' icon={faFile} size='lg' />  File
-                  <input type="file" id='file-label' />
-                </label>
-                <button className='poll-btn'> <FontAwesomeIcon className='media-icons' icon={faPoll} size='lg' />  Poll</button>
-              </MediaWrapper>
-            </div>
-          </div>
-          <div className="sending_btn">
-            {value
-              ?
-              <button className='sending__button' onClick={sendMessage}>
-                <FontAwesomeIcon icon={faPaperPlane} size='lg' color='white' />
-              </button>
-              :
-              <FontAwesomeIcon icon={faMicrophone} color='white' size='lg' />}
           </div>
         </div>
+
       </div>
     </div >
   )
@@ -189,16 +206,16 @@ const MessageContent = () => {
 
 
 const Wrapper = styled.div`
-   width:300px;
-   max-width: 600px;
    display: flex;
    align-items: flex-end;
    margin-bottom: 10px;
    margin-top: 10px;
+  max-width: 464px;
+
 `
 const Box = styled.div`
   padding: 10px;
-  width: 100%;
+  min-width: 300px;
   padding-bottom: 25px;
   border-radius: 10px;
   position: relative;

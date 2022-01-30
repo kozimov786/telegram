@@ -94,7 +94,7 @@
   position: relative;
 }
 .sending {
-  width: 685px;
+  width: 755px;
   padding-right: 20px;
   position: fixed;
   bottom: 0;
@@ -203,7 +203,7 @@
   font-size: 12px;
   font-weight: normal;
   text-align: right;
-  color: #000;
+  color: rgb(219, 219, 219);
   position: absolute;
   bottom: 3px;
   right: 5px;

@@ -44,8 +44,7 @@
 .menu {
   display: flex;
   align-items: center;
-  padding-top: 5px;
-  border-bottom: 1px solid #000;
+  margin-top: 8px;
   overflow-x: scroll;
   overflow-y: hidden;
 }
@@ -61,6 +60,11 @@
   cursor: pointer;
   padding: 10px;
   font-size: 18px;
+  border-bottom: 2px solid #000;
+}
+.menu__btn-active {
+  color: var(--accent-color);
+  border-bottom: 2px solid var(--accent-color);
 }
 .menu__btn:hover {
   background-color: #2c2c2c;

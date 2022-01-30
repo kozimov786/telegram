@@ -7,7 +7,7 @@
 .chat-item {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 15px 10px;
   border-radius: 10px;
   cursor: pointer;
 }
@@ -16,6 +16,11 @@
 }
 .chat-item__active {
   background-color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  padding: 15px 10px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 .chat-item__active .chat-item__badge {
   background-color: #f2f2f2;
