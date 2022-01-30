@@ -18,9 +18,9 @@ const Chat = () => {
     <div className='chat'>
       <ChatItem
         active={active}
-        title="Mayoq Hub"
+        title="Mayoqchilar"
         user="Hojiakbar"
-        message="Oshga eriman :)"
+        message="Ertaga oshga eriman :)"
         img={mayoqImg}
         time='20:12'
         badge='4'

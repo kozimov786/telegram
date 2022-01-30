@@ -36,7 +36,7 @@ body {
   font-family: "Roboto", "Arial", sans-serif;
   font-size: 16px;
   line-height: 24px;
-  background-color: #fff;
+  background-color: rgb(3, 3, 3);
   color: #191919;
 }
 a {
